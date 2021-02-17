@@ -36,15 +36,14 @@ ui <- fluidPage(
 server <- function(input, output) {
 
    source("Res_trans.R") 
-    output$juan=renderPlot({
-      ggplot(data = pd %>%
+    output$juan = renderPlotly({
+     plot_ly(data = pd %>%
                filter(!is.na(indoor_biting))%>%
-               filter(region==input$region),
-                                                                  
-             aes(x = hbi,
-                 y = key,
-                 color = indoor_biting)) +
-        geom_jitter()
+               filter(region==input$region)%>%
+               filter(species %in% input$species),
+             
+              x = ~key, y = ~hbi, z = ~indoor_biting,
+              type='scatter3d', mode='markers', color = ~region)
     })
     
   
