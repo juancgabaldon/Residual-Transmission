@@ -67,9 +67,9 @@ message("successfully loaded data")
 
 # Combine all into one
 df <-
-  Af_clean %>% mutate(region = 'Africa') %>%
-  bind_rows(Am_clean %>% mutate(region = 'Americas')) %>%
-  bind_rows(AsPac_clean %>% mutate(region = 'Asian Pacific'))
+  Bion_Af %>% mutate(region = 'Africa') %>%
+  bind_rows(Bion_Am %>% mutate(region = 'Americas')) %>%
+  bind_rows(Bion_AsPac %>% mutate(region = 'Asian Pacific'))
 
 # Make a quick and dirty plot
 pd <- df %>%
@@ -83,7 +83,7 @@ pd <- df %>%
 
 fig3D <- plot_ly(pd, x = ~key, y = ~hbi, z = ~indoor_biting)%>%
  add_markers(color= ~region)
-fig3D
+# fig3D
 
 
 
