@@ -3,6 +3,8 @@ library(dplyr)
 library(shiny)
 #install.packages("tidyr")
 library(ggplot2)
+#install.packages("plotly")
+library(plotly)
 
 #Reading files
 
@@ -15,29 +17,29 @@ Bion_AsPac<-read.csv("Bionomics_Asia_Pacific.csv")
 
 #Select relevant variables
 
-Af_clean<-select(Bion_Af,country, species, indoor_host, outdoor_host, combined_host, host_unit, indoor_biting, outdoor_biting, indoor_outdoor_biting_units, combined_1830_2130, combined_2130_0030, combined_0030_0330, combined_0330_0630,citation)
+#Af_clean<-select(Bion_Af,country, species, indoor_host, outdoor_host, combined_host, host_unit, indoor_biting, outdoor_biting, indoor_outdoor_biting_units, combined_1830_2130, combined_2130_0030, combined_0030_0330, combined_0330_0630,citation)
 
-Am_clean<-select(Bion_Am,country, species, indoor_host, outdoor_host, combined_host, host_unit, indoor_biting, outdoor_biting, indoor_outdoor_biting_units, combined_1830_2130, combined_2130_0030, combined_0030_0330, combined_0330_0630,citation)
+#Am_clean<-select(Bion_Am,country, species, indoor_host, outdoor_host, combined_host, host_unit, indoor_biting, outdoor_biting, indoor_outdoor_biting_units, combined_1830_2130, combined_2130_0030, combined_0030_0330, combined_0330_0630,citation)
 
-AsPac_clean<-select(Bion_AsPac,country, species, indoor_host, outdoor_host, combined_host, host_unit, indoor_biting, outdoor_biting, indoor_outdoor_biting_units, combined_1830_2130, combined_2130_0030, combined_0030_0330, combined_0330_0630,citation)
+#AsPac_clean<-select(Bion_AsPac,country, species, indoor_host, outdoor_host, combined_host, host_unit, indoor_biting, outdoor_biting, indoor_outdoor_biting_units, combined_1830_2130, combined_2130_0030, combined_0030_0330, combined_0330_0630,citation)
 
 #Remove NAs from certain columns
 
 #Removing entries with no info on HBI
 
-Af_HBI<-Af_clean[!with(Af_clean,is.na(indoor_host)& is.na(outdoor_host)),]
+#Af_HBI<-Af_clean[!with(Af_clean,is.na(indoor_host)& is.na(outdoor_host)),]
 
-Am_HBI<-Am_clean[!with(Am_clean,is.na(indoor_host)& is.na(outdoor_host)),]
+#Am_HBI<-Am_clean[!with(Am_clean,is.na(indoor_host)& is.na(outdoor_host)),]
 
-AsPac_HBI<-AsPac_clean[!with(AsPac_clean,is.na(indoor_host)& is.na(outdoor_host)),]
+#AsPac_HBI<-AsPac_clean[!with(AsPac_clean,is.na(indoor_host)& is.na(outdoor_host)),]
 
 #Removing entries with no info on exophily/endophily
 
-Af_in_out<-Af_clean[!with(Af_clean,is.na(indoor_biting)& is.na(outdoor_biting)),]
+#Af_in_out<-Af_clean[!with(Af_clean,is.na(indoor_biting)& is.na(outdoor_biting)),]
 
-Am_in_out<-Am_clean[!with(Am_clean,is.na(indoor_biting)& is.na(outdoor_biting)),]
+#Am_in_out<-Am_clean[!with(Am_clean,is.na(indoor_biting)& is.na(outdoor_biting)),]
 
-AsPac_in_out<-AsPac_clean[!with(AsPac_clean,is.na(indoor_biting)& is.na(outdoor_biting)),]
+#AsPac_in_out<-AsPac_clean[!with(AsPac_clean,is.na(indoor_biting)& is.na(outdoor_biting)),]
 
 #Saving files
 
@@ -65,14 +67,23 @@ message("successfully loaded data")
 
 # Combine all into one
 df <-
-  Af_clean %>% mutate(region = 'Africa') %>%
-  bind_rows(Am_clean %>% mutate(region = 'Americas')) %>%
-  bind_rows(AsPac_clean %>% mutate(region = 'Asian Pacific'))
+  Bion_Af %>% mutate(region = 'Africa') %>%
+  bind_rows(Bion_Am %>% mutate(region = 'Americas')) %>%
+  bind_rows(Bion_AsPac %>% mutate(region = 'Asian Pacific'))
 
 # Make a quick and dirty plot
 pd <- df %>%
   dplyr::select(hbi = indoor_host,
-                indoor_biting, region,
+                indoor_biting, region,species,
                 contains('combined_')) %>%
   tidyr::gather(key, value, combined_1830_2130:combined_0330_0630) %>%
   mutate(key = gsub('combined_', '', key))
+
+#Trying Plotly
+
+fig3D <- plot_ly(pd, x = ~key, y = ~hbi, z = ~indoor_biting)%>%
+ add_markers(color= ~region)
+# fig3D
+
+
+

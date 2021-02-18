@@ -16,18 +16,21 @@ ui <- fluidPage(
                         min=1,
                         max=20,
                          value= 15),
-            selectInput("region",
+            selectizeInput("region",
                     "Pick a region",
-                    choices = sort(unique(df$region))),
+                    choices = sort(unique(df$region)),
+                    selected = sort(unique(df$region)),
+                    multiple = TRUE),
             checkboxGroupInput("species",
                                "Select mosquito species",
-                               choices = sort(unique(df$species)))
+                               choices = sort(unique(df$species)),
+                               selected = sort(unique(df$species)))
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
            
-           plotOutput("juan")
+           plotlyOutput("juan")
         )
     )
 )
@@ -36,15 +39,14 @@ ui <- fluidPage(
 server <- function(input, output) {
 
    source("Res_trans.R") 
-    output$juan=renderPlot({
-      ggplot(data = pd %>%
+    output$juan <- renderPlotly({
+     plot_ly(data = pd %>%
                filter(!is.na(indoor_biting))%>%
-               filter(region==input$region),
-                                                                  
-             aes(x = hbi,
-                 y = key,
-                 color = indoor_biting)) +
-        geom_jitter()
+               filter(region %in% input$region)%>%
+               filter(species %in% input$species),
+             
+              x = ~key, y = ~hbi, z = ~indoor_biting,
+              type='scatter3d', mode='markers', color = ~region)
     })
     
   
