@@ -77,13 +77,13 @@ pd <- df %>%
                 indoor_biting, region,species,
                 contains('combined_')) %>%
   tidyr::gather(key, value, combined_1830_2130:combined_0330_0630) %>%
-  mutate(key = gsub('combined_', '', key))
+  mutate(key = gsub('combined_', '', key))%>%
+  filter(value!="")
+
+
 
 #Trying Plotly
 
 fig3D <- plot_ly(pd, x = ~key, y = ~hbi, z = ~indoor_biting)%>%
- add_markers(color= ~region)
-# fig3D
-
-
-
+  add_markers(color= ~species)
+fig3D
